@@ -3,6 +3,14 @@ Description: Invoc
 Parameters:
   PipelineBucket:
     Type: String
+Outputs:
+  RawS3Bucket:
+    Value: !Ref GraphQLApiKey
+  GraphQLUrl:
+    Value: !GetAtt GraphQLApi.GraphQLUrl
+  GraphQLApiKey:
+    Value: !GetAtt GraphQLApi.ApiKey
+
 Resources:
 ##########################################################
 #  DB
@@ -36,7 +44,7 @@ Resources:
 ##########################################################
 #  Glue
 ##########################################################
-  MyJob:
+  GlueEtl:
     Type: AWS::Glue::Job
     Properties:
       Command:
@@ -64,6 +72,12 @@ Resources:
     Properties:
       ApiId: !GetAtt GraphQLApi.ApiId
       DefinitionS3Location: !Sub "s3://${PipelineBucket}/schema.graphql"
+
+  GraphQLApiKey:
+    Type: AWS::AppSync::ApiKey
+    Properties:
+      ApiId: !Ref: GraphQLApi
+      Expires: 365
 
 ##########################################################
 #  Role
