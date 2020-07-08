@@ -9,7 +9,7 @@ Outputs:
   GraphQLUrl:
     Value: !GetAtt GraphQLApi.GraphQLUrl
   GraphQLApiKey:
-    Value: !GetAtt GraphQLApi.ApiKey
+    Value: !GetAtt GraphQLApiKey.ApiKey
 
 Resources:
 ##########################################################
@@ -89,6 +89,16 @@ Resources:
       DynamoDBConfig:
         TableName: !Ref TableConsumptionDaily
         AwsRegion: !Ref AWS::Region
+
+  GraphQLListConsumptionDailyResolver:
+    Type: AWS::AppSync::Resolver
+    Properties:
+      ApiId: !Ref GraphQLApi
+      DataSourceName: !Ref GraphQLConsumptionDailyDataSource
+      FieldName: "listConsumptionDaily(...): ConsumptionDailyConnection"
+      RequestMappingTemplateS3Location: !Sub "s3://${PipelineBucket}/resolver_list_consumption_daily_request.vm"
+      ResponseMappingTemplateS3Location: !Sub "s3://${PipelineBucket}/resolver_list_consumption_daily_response.vm"
+      TypeName: Query
 
 ##########################################################
 #  Role
