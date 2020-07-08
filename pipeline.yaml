@@ -128,7 +128,6 @@ Resources:
               - Name: CloudFormationArtifact
             Configuration:
               BucketName: !Ref PipelineBucket
-              ObjectKey: src
               Extract: true
             RunOrder: 3
 

@@ -5,7 +5,7 @@ Parameters:
     Type: String
 Outputs:
   RawS3Bucket:
-    Value: !Ref GraphQLApiKey
+    Value: !Ref S3GentrackTrialRaw
   GraphQLUrl:
     Value: !GetAtt GraphQLApi.GraphQLUrl
   GraphQLApiKey:
