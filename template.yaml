@@ -77,7 +77,6 @@ Resources:
     Type: AWS::AppSync::ApiKey
     Properties:
       ApiId: !Ref GraphQLApi
-      Expires: 365
 
   GraphQLConsumptionDailyDataSource:
     Type: AWS::AppSync::DataSource
