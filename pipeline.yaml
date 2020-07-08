@@ -1,0 +1,178 @@
+Parameters:
+  GitHubOAuthToken:
+    Type: String
+    NoEcho: true
+    MinLength: 40
+    MaxLength: 40
+    AllowedPattern: '[a-z0-9]*'
+
+  GitHubOwner:
+    Type: String
+    Default: antonzherdev
+    AllowedPattern: "[A-Za-z0-9-]+"
+
+  GitHubRepo:
+    Type: String
+    Default: gentrack-trial
+    AllowedPattern: "[A-Za-z0-9-]+"
+
+  GitHubBranch:
+    Type: String
+    Default: master
+    AllowedPattern: "[A-Za-z0-9-]+"
+Resources:
+  PipelineBucket:
+    Type: AWS::S3::Bucket
+
+  CodePipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      ArtifactStore:
+        Type: S3
+        Location: !Ref PipelineBucket
+      RestartExecutionOnUpdate: true
+      Name: gentrack_trial_pipeline
+      RoleArn: !GetAtt CodePipelineRole.Arn
+      Stages:
+      - Name: Source
+        Actions:
+        - Name: Source
+          InputArtifacts: []
+          ActionTypeId:
+            Category: Source
+            Owner: ThirdParty
+            Version: 1
+            Provider: GitHub
+          OutputArtifacts:
+          - Name: SourceCode
+          Configuration:
+            Owner: !Ref GitHubOwner
+            Repo: !Ref GitHubRepo
+            Branch: !Ref GitHubBranch
+            PollForSourceChanges: false
+            OAuthToken: !Ref GitHubOAuthToken
+          RunOrder: 1
+      - Name: Build
+        Actions:
+          - Name: CodeBuild
+            ActionTypeId:
+              Category: Build
+              Owner: AWS
+              Provider: CodeBuild
+              Version: '1'
+            InputArtifacts:
+              - Name: SourceCode
+            OutputArtifacts:
+              - Name: GlueEtlArtifact
+            Configuration:
+              ProjectName: !Ref CodeBuildProject
+            RunOrder: 1
+
+      - Name: Deploy
+        Actions:
+          - Name: CopyGlueEtl
+            ActionTypeId:
+              Category: Deploy
+              Owner: AWS
+              Provider: S3
+              Version: '1'
+            InputArtifacts:
+              - Name: GlueEtlArtifact
+            Configuration:
+              BucketName: pipeline
+              Extract: true
+            RunOrder: 1
+          - Name: CloudFormationDeploy
+            ActionTypeId:
+              Category: Deploy
+              Owner: AWS
+              Provider: CloudFormation
+              Version: '1'
+            InputArtifacts:
+              - Name: SourceCode
+            Configuration:
+              ActionMode: CREATE_UPDATE
+              Capabilities: "CAPABILITY_IAM,CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND"
+              RoleArn: !GetAtt CloudformationRole.Arn
+              StackName: "gentrack-trial"
+#              ParameterOverrides: !Sub '{"Domain": "${Domain}", "Suffix": "${Suffix}", "DynamoDbBillingMode": "${DynamoDbBillingMode}", "TenantTokenPassword": "${TenantTokenPassword}"}'
+              TemplatePath: "SourceCode::template.yaml"
+              OutputFileName: cf-back.json
+            OutputArtifacts:
+              - Name: CloudFormationArtifact
+            RunOrder: 2
+
+
+  CodeBuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: codebuild_project
+      ServiceRole: !Ref CodeBuildRole
+      Source:
+        Type: CODEPIPELINE
+      Environment:
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:4.0
+        Type: LINUX_CONTAINER
+        EnvironmentVariables:
+          - Name: ARTIFACT_S3_BUCKET
+            Value: !Ref PipelineBucket
+      Artifacts:
+        Name: BuildArtifact
+        Type: CODEPIPELINE
+
+  GithubWebhook:
+    Type: 'AWS::CodePipeline::Webhook'
+    Properties:
+      Authentication: GITHUB_HMAC
+      AuthenticationConfiguration:
+        SecretToken: !Ref GitHubOAuthToken
+      RegisterWithThirdParty: 'true'
+      Filters:
+      - JsonPath: "$.ref"
+        MatchEquals: refs/heads/{Branch}
+      TargetPipeline: !Ref CodePipeline
+      TargetAction: Source
+      TargetPipelineVersion: !GetAtt CodePipeline.Version
+
+  CodePipelineRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: pipeline
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          Effect: Allow
+          Principal:
+            Service: codepipeline.amazonaws.com
+          Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AdministratorAccess #TODO: Reduce permissions
+
+  CodeBuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: codebuild
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          Effect: Allow
+          Principal:
+            Service: codebuild.amazonaws.com
+          Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AdministratorAccess #TODO: Reduce permissions
+
+  CloudformationRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: formation
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          Effect: Allow
+          Principal:
+            Service: cloudformation.amazonaws.com
+          Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AdministratorAccess #TODO: Reduce permissions

@@ -1,23 +1,5 @@
 version: 0.2
-#phases:
-#  install:
-#    runtime-versions:
-#      python: 3.8
-#    commands:
-#      - ./install.sh
-#      - pip install pytest
-#  pre_build:
-#    commands:
-#      - cd ./tests && pytest && cd ..
-#  build:
-#    commands:
-#      - ./build.sh
-#  post_build:
-#    commands:
-#      - aws cloudformation package --template-file template.yaml --s3-bucket ${ARTIFACT_S3_BUCKET} --s3-prefix Lambdas --output-template-file template-after-sam.yaml
 artifacts:
-  secondary-artifacts:
-    GlueEtlArtifact:
-      files:
-        - glue_etl.py
-      discard-paths: yes
+  files:
+  - glue_etl.py
+  discard-paths: yes
