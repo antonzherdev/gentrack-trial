@@ -62,7 +62,7 @@ Resources:
   GraphQLSchema:
     Type: AWS::AppSync::GraphQLSchema
     Properties:
-      ApiId: !Ref GraphQLApi
+      ApiId: !GetAtt GraphQLApi.ApiId
       DefinitionS3Location: !Sub "s3://${PipelineBucket}/schema.graphql"
 
 ##########################################################
