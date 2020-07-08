@@ -1,0 +1,18 @@
+﻿schema {
+  query: Query
+}
+
+type ConsumptionDaily {
+  date: Int!
+  tenant: Int!
+  total: Int!
+}
+
+type ConsumptionDailyConnection {
+  items: [ConsumptionDaily]
+  nextToken: String
+}
+
+type Query {
+  listConsumptionDaily(limit: Int, nextToken: String, tenant: Int!): ConsumptionDailyConnection
+}

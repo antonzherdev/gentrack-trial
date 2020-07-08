@@ -64,6 +64,7 @@ Resources:
               - Name: SourceCode
             OutputArtifacts:
               - Name: GlueEtlArtifact
+              - Name: GraphQLArtifact
             Configuration:
               ProjectName: !Ref CodeBuildProject
             RunOrder: 1
@@ -78,6 +79,7 @@ Resources:
               Version: '1'
             InputArtifacts:
               - Name: GlueEtlArtifact
+              - Name: GraphQLArtifact
             Configuration:
               BucketName: !Ref PipelineBucket
               Extract: true

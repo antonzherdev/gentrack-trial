@@ -51,6 +51,21 @@ Resources:
       Role: !Ref GlueRole
 
 ##########################################################
+#  AppSync
+##########################################################
+  GraphQLApi:
+    Type: AWS::AppSync::GraphQLApi
+    Properties:
+      Name: gentrack_graph_ql
+	  AuthenticationType: "API_KEY"
+
+  GraphQLSchema:
+    Type: AWS::AppSync::GraphQLSchema
+    Properties:
+      ApiId: !Ref GraphQLApi
+      DefinitionS3Location: !Sub "s3://${PipelineBucket}/schema.graphql"
+
+##########################################################
 #  Role
 ##########################################################
 

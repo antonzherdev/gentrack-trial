@@ -1,5 +1,13 @@
 version: 0.2
 artifacts:
-  files:
-  - glue_etl.py
-  discard-paths: yes
+  secondary-artifacts:
+    GlueEtlArtifact:
+      base-directory: glue
+      files:
+      - "**/*"
+      discard-paths: yes
+    GraphQLArtifact:
+      base-directory: graphql
+      files:
+      - "**/*"
+      discard-paths: yes
