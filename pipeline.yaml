@@ -79,7 +79,7 @@ Resources:
             InputArtifacts:
               - Name: GlueEtlArtifact
             Configuration:
-              BucketName: pipeline
+              BucketName: !Ref PipelineBucket
               Extract: true
             RunOrder: 1
           - Name: CloudFormationDeploy

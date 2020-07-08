@@ -28,7 +28,6 @@ Resources:
   S3GentrackTrialRaw:
     Type: AWS::S3::Bucket
     DeletionPolicy: Retain
-    Properties:
-      BucketName: gentrack_trial_raw_data
+
 
 
