@@ -95,7 +95,7 @@ Resources:
               Capabilities: "CAPABILITY_IAM,CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND"
               RoleArn: !GetAtt CloudformationRole.Arn
               StackName: "gentrack-trial"
-#              ParameterOverrides: !Sub '{"Domain": "${Domain}", "Suffix": "${Suffix}", "DynamoDbBillingMode": "${DynamoDbBillingMode}", "TenantTokenPassword": "${TenantTokenPassword}"}'
+              ParameterOverrides: !Sub '{"PipelineBucket": "${PipelineBucket}"}'
               TemplatePath: "SourceCode::template.yaml"
               OutputFileName: cf-back.json
             OutputArtifacts:

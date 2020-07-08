@@ -12,7 +12,7 @@ glueContext = GlueContext(SparkContext.getOrCreate())
 ##############################################################################################################
 args = getResolvedOptions(sys.argv, ['JOB_NAME', 'tenant', 's3_path'])
 tenant = int(args['tenant'])
-s3_path = args['s3_path']
+s3_path = args['s3-path']
 
 ##############################################################################################################
 # Extract

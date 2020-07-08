@@ -1,6 +1,8 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: Invoc
-
+Parameters:
+  PipelineBucket:
+    Type: String
 Resources:
 ##########################################################
 #  DB
@@ -10,7 +12,6 @@ Resources:
     DeletionPolicy: Retain
     Properties:
       TableName: consumption_daily
-      BillingMode: !Ref DynamoDbBillingMode
       AttributeDefinitions:
         - AttributeName: tenant
           AttributeType: N
@@ -29,5 +30,37 @@ Resources:
     Type: AWS::S3::Bucket
     DeletionPolicy: Retain
 
+##########################################################
+#  Glue
+##########################################################
+  MyJob:
+    Type: AWS::Glue::Job
+    Properties:
+      Command:
+        Name: glueetl
+        ScriptLocation: !Sub "s3://${PipelineBucket}/glue_etl.py"
+      DefaultArguments:
+        "--tenant": "1"
+        "--s3-path": !Sub "s3://${S3GentrackTrialRaw}/"
+      MaxCapacity: 2
+      MaxRetries: 0
+      Name: gentrack_etl
+      Role: !Ref GlueRole
 
+##########################################################
+#  Role
+##########################################################
 
+  GlueRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: glue
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          Effect: Allow
+          Principal:
+            Service: codebuild.amazonaws.com
+          Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AdministratorAccess #TODO: Reduce permissions
