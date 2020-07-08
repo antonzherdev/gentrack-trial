@@ -76,25 +76,26 @@ Resources:
   GraphQLApiKey:
     Type: AWS::AppSync::ApiKey
     Properties:
-      ApiId: !Ref GraphQLApi
+      ApiId: !GetAtt GraphQLApi.ApiId
 
   GraphQLConsumptionDailyDataSource:
     Type: AWS::AppSync::DataSource
     Properties:
-      ApiId: !Ref GraphQLApi
+      ApiId: !GetAtt GraphQLApi.ApiId
       Name: consumption_daily
       Type: "AMAZON_DYNAMODB"
-      ServiceRoleArn: !Ref AppSyncRole
+      ServiceRoleArn: !GetAtt AppSyncRole.Arn
       DynamoDBConfig:
         TableName: !Ref TableConsumptionDaily
         AwsRegion: !Ref AWS::Region
 
   GraphQLListConsumptionDailyResolver:
     Type: AWS::AppSync::Resolver
+    DependsOn: GraphQLSchema
     Properties:
-      ApiId: !Ref GraphQLApi
-      DataSourceName: !Ref GraphQLConsumptionDailyDataSource
-      FieldName: "listConsumptionDaily(...): ConsumptionDailyConnection"
+      ApiId: !GetAtt GraphQLApi.ApiId
+      DataSourceName: !GetAtt GraphQLConsumptionDailyDataSource.Name
+      FieldName: listConsumptionDaily
       RequestMappingTemplateS3Location: !Sub "s3://${PipelineBucket}/resolver_list_consumption_daily_request.vm"
       ResponseMappingTemplateS3Location: !Sub "s3://${PipelineBucket}/resolver_list_consumption_daily_response.vm"
       TypeName: Query
