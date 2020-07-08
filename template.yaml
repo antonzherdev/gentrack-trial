@@ -12,6 +12,9 @@ Resources:
     DeletionPolicy: Retain
     Properties:
       TableName: consumption_daily
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
       AttributeDefinitions:
         - AttributeName: tenant
           AttributeType: N
