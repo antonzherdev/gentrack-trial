@@ -81,6 +81,7 @@ Resources:
               - Name: GlueEtlArtifact
             Configuration:
               BucketName: !Ref PipelineBucket
+              ObjectKey: src
               Extract: true
             RunOrder: 1
           - Name: CopyGraphQL
@@ -93,8 +94,10 @@ Resources:
               - Name: GraphQLArtifact
             Configuration:
               BucketName: !Ref PipelineBucket
+              ObjectKey: src
               Extract: true
             RunOrder: 1
+
           - Name: CloudFormationDeploy
             ActionTypeId:
               Category: Deploy
@@ -110,11 +113,24 @@ Resources:
               StackName: "gentrack-trial"
               ParameterOverrides: !Sub '{"PipelineBucket": "${PipelineBucket}"}'
               TemplatePath: "SourceCode::template.yaml"
-              OutputFileName: cf-back.json
+              OutputFileName: cf.json
             OutputArtifacts:
               - Name: CloudFormationArtifact
             RunOrder: 2
 
+          - Name: CloudFormationOutput
+            ActionTypeId:
+              Category: Deploy
+              Owner: AWS
+              Provider: S3
+              Version: '1'
+            InputArtifacts:
+              - Name: CloudFormationArtifact
+            Configuration:
+              BucketName: !Ref PipelineBucket
+              ObjectKey: src
+              Extract: true
+            RunOrder: 3
 
   CodeBuildProject:
     Type: AWS::CodeBuild::Project

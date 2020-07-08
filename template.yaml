@@ -49,7 +49,7 @@ Resources:
     Properties:
       Command:
         Name: glueetl
-        ScriptLocation: !Sub "s3://${PipelineBucket}/consumption_daily_etl.py"
+        ScriptLocation: !Sub "s3://${PipelineBucket}/src/consumption_daily_etl.py"
       DefaultArguments:
         "--tenant": "1"
         "--s3_path": !Sub "s3://${S3GentrackTrialRaw}/"
@@ -71,7 +71,7 @@ Resources:
     Type: AWS::AppSync::GraphQLSchema
     Properties:
       ApiId: !GetAtt GraphQLApi.ApiId
-      DefinitionS3Location: !Sub "s3://${PipelineBucket}/schema.graphql"
+      DefinitionS3Location: !Sub "s3://${PipelineBucket}/src/schema.graphql"
 
   GraphQLApiKey:
     Type: AWS::AppSync::ApiKey
@@ -96,8 +96,8 @@ Resources:
       ApiId: !GetAtt GraphQLApi.ApiId
       DataSourceName: !GetAtt GraphQLConsumptionDailyDataSource.Name
       FieldName: listConsumptionDaily
-      RequestMappingTemplateS3Location: !Sub "s3://${PipelineBucket}/resolver_list_consumption_daily_request.vm"
-      ResponseMappingTemplateS3Location: !Sub "s3://${PipelineBucket}/resolver_list_consumption_daily_response.vm"
+      RequestMappingTemplateS3Location: !Sub "s3://${PipelineBucket}/src/resolver_list_consumption_daily_request.vm"
+      ResponseMappingTemplateS3Location: !Sub "s3://${PipelineBucket}/src/resolver_list_consumption_daily_response.vm"
       TypeName: Query
 
 ##########################################################
