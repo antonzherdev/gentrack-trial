@@ -1,0 +1,34 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Invoc
+
+Resources:
+##########################################################
+#  DB
+##########################################################
+  TableConsumptionDaily:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    Properties:
+      TableName: consumption_daily
+      BillingMode: !Ref DynamoDbBillingMode
+      AttributeDefinitions:
+        - AttributeName: tenant
+          AttributeType: N
+        - AttributeName: date
+          AttributeType: N
+      KeySchema:
+        - AttributeName: tenant
+          KeyType: HASH
+        - AttributeName: date
+          KeyType: RANGE
+
+##########################################################
+#  S3
+##########################################################
+  S3GentrackTrialRaw:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: gentrack_trial_raw_data
+
+
