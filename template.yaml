@@ -44,7 +44,7 @@ Resources:
         ScriptLocation: !Sub "s3://${PipelineBucket}/glue_etl.py"
       DefaultArguments:
         "--tenant": "1"
-        "--s3-path": !Sub "s3://${S3GentrackTrialRaw}/"
+        "--s3_path": !Sub "s3://${S3GentrackTrialRaw}/"
       MaxCapacity: 2
       MaxRetries: 0
       Name: gentrack_etl
