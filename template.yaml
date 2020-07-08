@@ -49,13 +49,13 @@ Resources:
     Properties:
       Command:
         Name: glueetl
-        ScriptLocation: !Sub "s3://${PipelineBucket}/glue_etl.py"
+        ScriptLocation: !Sub "s3://${PipelineBucket}/consumption_daily_etl.py"
       DefaultArguments:
         "--tenant": "1"
         "--s3_path": !Sub "s3://${S3GentrackTrialRaw}/"
       MaxCapacity: 2
       MaxRetries: 0
-      Name: gentrack_etl
+      Name: consumption_daily_etl
       Role: !Ref GlueRole
 
 ##########################################################
