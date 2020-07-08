@@ -79,6 +79,17 @@ Resources:
               Version: '1'
             InputArtifacts:
               - Name: GlueEtlArtifact
+            Configuration:
+              BucketName: !Ref PipelineBucket
+              Extract: true
+            RunOrder: 1
+          - Name: CopyGraphQL
+            ActionTypeId:
+              Category: Deploy
+              Owner: AWS
+              Provider: S3
+              Version: '1'
+            InputArtifacts:
               - Name: GraphQLArtifact
             Configuration:
               BucketName: !Ref PipelineBucket

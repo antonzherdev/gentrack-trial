@@ -57,7 +57,7 @@ Resources:
     Type: AWS::AppSync::GraphQLApi
     Properties:
       Name: gentrack_graph_ql
-	  AuthenticationType: "API_KEY"
+      AuthenticationType: "API_KEY"
 
   GraphQLSchema:
     Type: AWS::AppSync::GraphQLSchema
