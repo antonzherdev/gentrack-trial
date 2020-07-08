@@ -63,7 +63,7 @@ Resources:
         Statement:
           Effect: Allow
           Principal:
-            Service: codebuild.amazonaws.com
+            Service: glue.amazonaws.com
           Action: sts:AssumeRole
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AdministratorAccess #TODO: Reduce permissions
