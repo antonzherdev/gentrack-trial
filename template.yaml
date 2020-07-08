@@ -76,14 +76,38 @@ Resources:
   GraphQLApiKey:
     Type: AWS::AppSync::ApiKey
     Properties:
-      ApiId: !Ref: GraphQLApi
+      ApiId: !Ref GraphQLApi
       Expires: 365
+
+  GraphQLConsumptionDailyDataSource:
+    Type: AWS::AppSync::DataSource
+    Properties:
+      ApiId: !Ref GraphQLApi
+      Name: consumption_daily
+      Type: "AMAZON_DYNAMODB"
+      ServiceRoleArn: !Ref AppSyncRole
+      DynamoDBConfig:
+        TableName: !Ref TableConsumptionDaily
+        AwsRegion: !Ref AWS::Region
 
 ##########################################################
 #  Role
 ##########################################################
-
   GlueRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: glue
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          Effect: Allow
+          Principal:
+            Service: glue.amazonaws.com
+          Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AdministratorAccess #TODO: Reduce permissions
+
+  AppSyncRole:
     Type: AWS::IAM::Role
     Properties:
       RoleName: glue
