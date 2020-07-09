@@ -47,7 +47,9 @@ Resources:
   GlueEtl:
     Type: AWS::Glue::Job
     Properties:
+      GlueVersion: "1.0"
       Command:
+        PythonVersion: 3
         Name: glueetl
         ScriptLocation: !Sub "s3://${PipelineBucket}/src/consumption_daily_etl.py"
       DefaultArguments:
